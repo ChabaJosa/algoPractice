@@ -3,43 +3,60 @@ function printNode(node) {
   console.log(node.label);
 }
 //
-// renders the taxonomy in the correct order
-function renderTaxonomy(inputs) { 
+// renders the taxonomy tree in the correct order
+// Ids are random and only the parentIDs matter
+//
+function renderTaxonomy(inputs) {
   //
   //  First, Find Parent Node ID Null
   //
-  let parent = {};
-  //
-  inputs.forEach((item) => {
-    if (item.parentId === null) {
-      parent[item.label] = item;
-    }
+  let parentElement = [...inputs].filter((item) => {
+    return item.parentId === null;
   });
   //
-  // Get Immediate Children
-  const parentKey = Object.keys(parent);
-
-  let immediateChildren = {};
-  //
-  inputs.forEach((item) => {
-    if (item.parentId === parent[parentKey[0]].id) {
-      immediateChildren[item.label] = item;
-    }
-  });
-  //
-  console.log(immediateChildren);
-  const childrenKeys = Object.keys(immediateChildren);
-  //
-  // Loop throught Array again to find children
-  // 
   let i = 0;
-  while (i < inputs.length) {
-    i++;
-    if (inputs[i].parentId === childrenKeys[0]) {
-      parent[item.label] = item;
-    }
-  }
+  let treeResult = helper(parentElement[0], i, inputs);
+  console.log(treeResult);
   //
+}
+//
+function helper(obj, iterator, inputs) {
+  //
+  //  Now that we have the parent element we will
+  //
+  let doneIndicator = false;
+  let savedObj = obj; // parentElement[0];
+  let treeObj = { [`${obj.label}`]: obj }; // { [`${parentElement[0].label}`]: parentElement[0] };
+  //
+  while (doneIndicator !== true) {
+    //
+    console.log("---------------->", inputs[iterator]);
+    if (inputs[iterator] === undefined) {
+      doneIndicator = true;
+      break;
+    }
+    //
+    if (
+      inputs[iterator].parentId === savedObj.id &&
+      inputs[iterator].id < savedObj.id
+    ) {
+      treeObj[`${savedObj.label}`]["left"] = inputs[iterator];
+      iterator++;
+      helper(inputs[iterator], iterator, inputs); // savedObj = inputs[iterator];
+    }
+    //
+    if (
+      inputs[iterator].parentId === savedObj.id &&
+      inputs[iterator].id > savedObj.id
+    ) {
+      treeObj[`${savedObj.label}`]["right"] = inputs[iterator];
+      iterator++;
+      helper(inputs[iterator], iterator, inputs); // savedObj = inputs[iterator];
+    }
+    //
+    iterator++;
+    //
+  }
 }
 //
 const testInput = [
@@ -62,7 +79,7 @@ const testInput = [
   { label: "Pig", id: 4, parentId: 3 },
   { label: "Birds", id: 16, parentId: 1000 },
   { label: "Questionablely Tasty Mammals", id: 7, parentId: 2 },
-]; 
+];
 //
 //  This solution does not work
 //
