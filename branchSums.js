@@ -13,12 +13,37 @@ class BinaryTree {
     this.left = null;
     this.right = null;
   }
+  //
+  //  I added the insert method so I can 
+  //  make the function log the result here 
+  //
+  insert(values, i = 0) {
+    if (i >= values.length) return;
+    const queue = [this];
+    while (queue.length > 0) {
+      let current = queue.shift();
+      if (current.left === null) {
+        current.left = new BinaryTree(values[i]);
+        break;
+      }
+      queue.push(current.left);
+      if (current.right === null) {
+        current.right = new BinaryTree(values[i]);
+        break;
+      }
+      queue.push(current.right);
+    }
+    this.insert(values, i + 1);
+    return this;
+  }
 }
-
+//
+//
 function branchSums(root) {
   // Write your code here.
   let sums = [];
   helper(root, 0, sums);
+  console.log(sums);
   return sums;
 }
 
@@ -32,10 +57,12 @@ function helper(node, total, sumsArr) {
     return;
   }
   //
-  helper(node.left, newRunningSum, sumsArr);
-  helper(node.right, newRunningSum, sumsArr);
+  helper(node.left, Number(newRunningSum), sumsArr);
+  helper(node.right, Number(newRunningSum), sumsArr);
 }
 
 // Do not edit the lines below.
-exports.BinaryTree = BinaryTree;
-exports.branchSums = branchSums;
+//
+const tree = new BinaryTree(1).insert([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+//
+branchSums(tree);
